@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-describe('Validate Header', () => {
+describe('Validate API Responses', () => {
     it('Successfully validate content-type', () => {
       cy.request('https://pokeapi.co/api/v2/pokemon/ditto').as('pokemon');
       cy.get('@pokemon')
@@ -8,5 +8,28 @@ describe('Validate Header', () => {
         .its('content-type')
         .should('include', 'application/json; charset=utf-8');
     });
-  });
-  
+
+    it('Successfully validate status code', () => {
+      cy.request('https://pokeapi.co/api/v2/pokemon/ditto').as('ditto');
+      cy.get('@ditto').its('status').should('equal', 200);
+    });
+
+    it('Successfully validate status code with params', () => {
+      cy.request({
+        method: 'GET',
+        url: 'https://pokeapi.co/api/v2/pokemon/ditto'
+      }).as('ditto');
+      cy.get('@ditto').its('status').should('equal', 200);
+    });
+
+    it('Validate Content', () => {
+        cy.request({
+          method: 'GET',
+          url: 'https://pokeapi.co/api/v2/pokemon/bulbasaur'
+        }).as('bulbasaur');
+        cy.get('@bulbasaur').its('body').should('include', {name:"bulbasaur"});
+        cy.get('@bulbasaur').then((response) => {
+            expect(response.body.abilities[0].ability.name).to.equal('overgrow');
+        });
+        });
+});
